@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
-from .models import BuildString
+from .models import BuildModel
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -9,9 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 def show(request, build_id):
     if build_id:
         try:
-          build = BuildString.objects.get(id=build_id)
+          build = BuildModel.objects.get(id=build_id)
           return JsonResponse({'build': build.build_string})
-        except BuildString.DoesNotExist:
+        except BuildModel.DoesNotExist:
           return JsonResponse({'error': 'No build found'})
     else:
         return JsonResponse({'error': 'No build id provided'})
@@ -24,7 +24,7 @@ def create(request):
         if build_string == "":
           return JsonResponse({'error': 'Invalid build string'})
         if build_string:
-            build = BuildString(build_string=build_string)
+            build = BuildModel(build_string=build_string)
             build.save()
             print("Build ID: ", build.id)
             return JsonResponse({'build_id': build.id}, status=201)

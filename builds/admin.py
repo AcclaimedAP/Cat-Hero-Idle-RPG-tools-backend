@@ -1,5 +1,16 @@
 from django.contrib import admin
 
-from .models import BuildString
+from .models import BuildModel
 
-admin.site.register(BuildString)
+
+class BuildModelAdmin(admin.ModelAdmin):
+    search_fields = ["id"]
+    list_display = (
+        "id",
+        "build_string",
+        "created",
+        "last_accessed",
+    )
+
+
+admin.site.register(BuildModel, BuildModelAdmin)
