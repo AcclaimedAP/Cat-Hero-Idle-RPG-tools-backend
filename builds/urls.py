@@ -1,8 +1,7 @@
 from django.urls import path
-
-from . import views
+from .views import BuildView
 
 urlpatterns = [
-    path("<str:build_id>/", views.show, name="show"),
-    path("new/", views.create, name="create"),
+    path("<str:build_id>/", BuildView.as_view(), name="show"),
+    path("new/", BuildView.as_view(), name="create"),
 ]

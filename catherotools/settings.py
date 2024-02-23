@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ["178.128.198.164", "api.cathero.tools"]
+ALLOWED_HOSTS = ["localhost", "178.128.198.164", "api.cathero.tools"]
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://api.cathero.tools", "https://cathero.tools", "http://178.128.198.164", "https://acclaimedap.github.io"]
 # Application definition
