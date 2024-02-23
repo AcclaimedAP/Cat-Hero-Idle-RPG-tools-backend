@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='buildstring',
             name='build_string',
-            field=models.CharField(max_length=9000),
+            field=models.TextField(max_length=9000),
         ),
     ]
