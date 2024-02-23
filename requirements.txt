@@ -1,5 +1,4 @@
 asgiref==3.7.2
-Django==5.0.2
 django-cors-headers==4.3.1
 django-grappelli==3.0.8
 psycopg2-binary==2.9.9
