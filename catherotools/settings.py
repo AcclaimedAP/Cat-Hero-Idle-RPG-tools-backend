@@ -28,7 +28,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 ALLOWED_HOSTS = ["178.128.198.164", "api.cathero.tools", "cathero.tools"]
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5173", "https://api.cathero.tools", "https://cathero.tools", "https://cathero.tools/", "cathero.tools", "http://178.128.198.164", "https://acclaimedap.github.io"]
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://api.cathero.tools", "https://cathero.tools", "https://cathero.tools/", "cathero.tools", "http://178.128.198.164", "https://acclaimedap.github.io"]
 # Application definition
 
@@ -48,7 +47,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
