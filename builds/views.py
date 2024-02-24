@@ -6,6 +6,7 @@ from .models import BuildModel
 from django.utils import timezone
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class BuildCreateView(View):
     def post(self, request):
         build_string = request.body.decode('utf-8').strip()
