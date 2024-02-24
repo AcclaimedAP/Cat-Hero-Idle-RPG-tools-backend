@@ -1,0 +1,15 @@
+[flake8]
+ignore =
+    E501,
+    W503,
+    C901,
+
+max-line-length = 120
+
+max-complexity = 10
+
+exclude =
+    migrations,
+    __pycache__,
+    build,
+    dist
