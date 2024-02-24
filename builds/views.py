@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 from .models import BuildModel
-from django.views.decorators.csrf import csrf_exempt
+
 
 
 
@@ -17,7 +17,7 @@ def show(request, build_id):
         return JsonResponse({'error': 'No build id provided'})
     
 
-@csrf_exempt
+
 def create(request):
     if request.method == 'POST':
         build_string = request.body.decode('utf-8')
