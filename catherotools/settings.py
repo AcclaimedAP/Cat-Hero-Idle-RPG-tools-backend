@@ -30,9 +30,16 @@ DEBUG = os.getenv("DEBUG") == "True"
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
+DEBUG = os.getenv("DEBUG")
+
+ALLOWED_HOSTS = ["localhost", "178.128.198.164", "api.cathero.tools"]
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://api.cathero.tools", "https://cathero.tools", "http://178.128.198.164", "https://acclaimedap.github.io"]
+
 # Application definition
 
 INSTALLED_APPS = [
+    'debug_toolbar',
     'builds.apps.BuildsConfig',
     "corsheaders",
     'django.contrib.admin',
@@ -44,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -130,3 +138,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

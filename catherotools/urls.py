@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
+from django.conf import settings
 
 
 urlpatterns = [
@@ -24,3 +25,7 @@ urlpatterns = [
     path('builds/', include('builds.urls')),
     path('', lambda request: redirect('/admin/', permanent=True)),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))
