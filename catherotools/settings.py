@@ -26,18 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-<< << << < Updated upstream
 DEBUG = os.getenv("DEBUG") == "True"
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
-== == == =
 DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = ["localhost", "178.128.198.164", "api.cathero.tools"]
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://api.cathero.tools", "https://cathero.tools", "http://178.128.198.164", "https://acclaimedap.github.io"]
->>>>>> > Stashed changes
+
 # Application definition
 
 INSTALLED_APPS = [
