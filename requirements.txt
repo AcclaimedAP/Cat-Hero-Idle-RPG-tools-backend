@@ -9,3 +9,4 @@ tzdata==2024.1
 websockets==12.0
 pre-commit==3.5.0
 autopep8==2.0.4
+django-debug-toolbar==4.3.0
