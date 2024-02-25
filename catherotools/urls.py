@@ -23,6 +23,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('builds/', include('builds.urls')),
+    path('news/', include('news.urls')),
     path('', lambda request: redirect('/admin/', permanent=True)),
 ]
 
