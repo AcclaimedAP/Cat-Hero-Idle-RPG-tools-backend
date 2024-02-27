@@ -51,7 +51,6 @@ class RuneAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(RuneAdminForm, self).__init__(*args, **kwargs)
-        # Ajouter du texte HTML sous le champ 'values'
         self.fields['values'].help_text = mark_safe("""
         <div>
             <p>Be sure to include the right values :</p>
