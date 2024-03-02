@@ -32,9 +32,7 @@ CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
 DEBUG = os.getenv("DEBUG")
 
-ALLOWED_HOSTS = ["localhost", "178.128.198.164", "api.cathero.tools"]
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://api.cathero.tools", "https://cathero.tools", "http://178.128.198.164", "https://acclaimedap.github.io"]
 
 # Application definition
 

@@ -8,7 +8,7 @@ def create_types(apps, schema_editor):
     types_list = [
         'food', 'plant', 'animal', 'machine', 'dessert', 'chicken',
         'hamburger', 'pirate', 'wolf', 'cat', 'magic', 'dragon',
-        'shark', 'small', 'medium', 'large'
+        'shark', 'small', 'medium', 'large', 'cloud'
     ]
     for type_name in types_list:
         Type.objects.create(slug=type_name)

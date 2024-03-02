@@ -7,12 +7,14 @@ from django.utils.safestring import mark_safe
 class CompanionAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     list_display = (
+        "id",
         "name",
         "rarity",
         "base_mp",
         "display_types",
     )
     filter_horizontal = ("types",)
+    ordering = ("id",)
 
     def display_types(self, obj):
         return ", ".join([type.slug for type in obj.types.all()])
@@ -25,6 +27,7 @@ admin.site.register(Companion, CompanionAdmin)
 class SkillAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     list_display = (
+        "id",
         "name",
         "rarity",
         "description",
@@ -32,6 +35,7 @@ class SkillAdmin(admin.ModelAdmin):
         "display_types"
     )
     filter_horizontal = ("types",)
+    ordering = ("id",)
 
     def display_types(self, obj):
         return ", ".join([type.slug for type in obj.types.all()])
@@ -80,12 +84,15 @@ class RuneAdmin(admin.ModelAdmin):
     form = RuneAdminForm
     search_fields = ["name"]
     list_display = (
+        "id",
         "name",
         "rarity",
         "description",
         "display_types",
         "values",
     )
+
+    ordering = ("id",)
 
     def display_types(self, obj):
         """Retourne une représentation des types liés à ce compagnon."""

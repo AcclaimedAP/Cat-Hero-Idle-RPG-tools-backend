@@ -12,23 +12,11 @@ class Companion(models.Model):
         ('mythic', 'Mythic'),
     ]
 
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
     base_mp = models.IntegerField()
     types = models.ManyToManyField('Type')
-    # base_attack = models.FloatField()
-    # base_aspd = models.FloatField()
-    # attack_per_level = models.FloatField()
-    # aspd_per_level = models.FloatField()
-
-    # def calculate_final_stat(self, base_stat, stat_per_level, level):
-    #     return base_stat + (stat_per_level * (level - 1))
-
-    # def final_attack(self, level):
-    #     return self.calculate_final_stat(self.baseAttack, self.attackPerLevel, level)
-
-    # def final_aspd(self, level):
-    #     return self.calculate_final_stat(self.baseASPD, self.ASPDPerLevel, level)
 
 
 class Skill(models.Model):
@@ -40,7 +28,7 @@ class Skill(models.Model):
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
     ]
-
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
     description = models.TextField(max_length=500)
@@ -49,7 +37,7 @@ class Skill(models.Model):
 
 
 class Type(models.Model):
-    # ['food', 'plant', 'animal', 'machine', 'dessert', 'chicken', 'hamburger', 'pirate', 'wolf', 'cat', 'magic', 'dragon', 'shark', 'small', 'medium', 'large']
+    # ['food', 'plant', 'animal', 'machine', 'dessert', 'chicken', 'hamburger', 'cloud', 'pirate', 'wolf', 'cat', 'magic', 'dragon', 'shark', 'small', 'medium', 'large']
     slug = models.CharField(max_length=50, unique=True)
 
     def __str__(self) -> str:
@@ -90,8 +78,13 @@ class Rune(models.Model):
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
     ]
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
     description = models.TextField(max_length=200)
     type = models.ForeignKey(RuneType, on_delete=models.SET_NULL, related_name='runes', null=True)
     values = ArrayField(models.CharField(max_length=100), default=list)
+
+
+class Runezggerge(models.Model):
+    id = models.IntegerField(primary_key=True)

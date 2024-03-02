@@ -53,15 +53,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Skill",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.IntegerField(primary_key=True, serialize=False)),
                 ("name", models.CharField(max_length=100)),
                 (
                     "rarity",
@@ -85,15 +77,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Rune",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.IntegerField(primary_key=True, serialize=False)),
                 ("name", models.CharField(max_length=50)),
                 (
                     "rarity",
@@ -131,15 +115,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Companion",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.IntegerField(primary_key=True, serialize=False)),
                 ("name", models.CharField(max_length=100)),
                 (
                     "rarity",
