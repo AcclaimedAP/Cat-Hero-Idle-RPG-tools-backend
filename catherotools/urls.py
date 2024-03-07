@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('builds/', include('builds.urls')),
     path('news/', include('news.urls')),
+    path('stuff/', include('stuff.urls')),
     path('', lambda request: redirect('/admin/', permanent=True)),
 ]
 

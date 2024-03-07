@@ -14,6 +14,7 @@ class Companion(models.Model):
 
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
     base_mp = models.IntegerField()
     types = models.ManyToManyField('Type')
@@ -30,6 +31,7 @@ class Skill(models.Model):
     ]
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
     description = models.TextField(max_length=500)
     types = models.ManyToManyField('Type')
@@ -70,7 +72,7 @@ class RuneType(models.Model):
         return self.name
 
 
-class Rune(models.Model):
+class SubRune(models.Model):
     RARITY_CHOICES = [
         ('uncommon', 'Uncommon'),
         ('rare', 'Rare'),
@@ -80,11 +82,23 @@ class Rune(models.Model):
     ]
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
     description = models.TextField(max_length=200)
     type = models.ForeignKey(RuneType, on_delete=models.SET_NULL, related_name='runes', null=True)
     values = ArrayField(models.CharField(max_length=100), default=list)
 
 
-class Runezggerge(models.Model):
+class MainRune(models.Model):
+    RARITY_CHOICES = [
+        ('uncommon', 'Uncommon'),
+        ('rare', 'Rare'),
+        ('epic', 'Epic'),
+        ('legendary', 'Legendary'),
+        ('mythic', 'Mythic'),
+    ]
     id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=255, blank=True)
+    rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
+    description = models.TextField(max_length=200)
