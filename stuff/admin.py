@@ -1,7 +1,7 @@
 from django.contrib import admin
-from django import forms
 from stuff.models import Companion, MainRune, SubRune, Skill
-from django.utils.safestring import mark_safe
+# from django import forms
+# from django.utils.safestring import mark_safe
 
 
 class CompanionAdmin(admin.ModelAdmin):
