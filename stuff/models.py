@@ -11,8 +11,6 @@ class Companion(models.Model):
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
     ]
-
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
@@ -29,7 +27,6 @@ class Skill(models.Model):
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
     ]
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
@@ -80,7 +77,6 @@ class SubRune(models.Model):
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
     ]
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
@@ -97,7 +93,6 @@ class MainRune(models.Model):
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
     ]
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)

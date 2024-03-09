@@ -20,7 +20,7 @@ def update_slugs(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("stuff", "0007_add_initial_runes"),
+        ("stuff", "0007_add_initial_sub_runes"),
     ]
 
     operations = [

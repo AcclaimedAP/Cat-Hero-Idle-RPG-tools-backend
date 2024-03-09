@@ -131,7 +131,7 @@ def create_subrunes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("stuff", "0008_update_slugs"),
+        ("stuff", "0006_add_initial_runes"),
     ]
 
     operations = [

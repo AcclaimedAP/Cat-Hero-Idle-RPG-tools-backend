@@ -64,7 +64,7 @@ def add_main_runes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("stuff", "0006_mainrune_subrune_companion_slug_skill_slug_and_more"),
+        ("stuff", "0005_add_initial_companions"),
     ]
 
     operations = [

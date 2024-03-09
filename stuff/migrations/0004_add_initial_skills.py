@@ -52,12 +52,8 @@ def create_skills(apps, schema_editor):
         {'name': 'Ocean\'s Punishment', 'rarity': 'mythic', 'description': 'Leaves a Shark Sign on all enemies. The sign stores the DMG received by the target. Deals 3000% of ATK after the sign, and then additionally deals 1500% DMG stored in the sign.', 'cooldown': 40.0, 'types': ['shark', 'pirate']}
     ]
 
-    for i, skill in enumerate(skills_data):
-        skill['id'] = i
-
     for skill_data in skills_data:
         skill, created = Skill.objects.get_or_create(
-            id=skill_data["id"],
             name=skill_data['name'],
             rarity=skill_data['rarity'],
             description=skill_data['description'],
