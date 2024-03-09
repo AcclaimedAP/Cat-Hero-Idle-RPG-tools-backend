@@ -5,12 +5,12 @@ from stuff.models import Companion, MainRune, Skill, SubRune
 
 def return_all_data():
     companions = Companion.objects.prefetch_related('types').distinct().values(
-        'id', 'name', 'slug', 'rarity', 'base_mp')
+        'id', 'name', 'slug', 'rarity', 'base_mp').order_by("id")
     skills = Skill.objects.prefetch_related('types').values(
-        'id', 'name', 'slug', 'rarity', 'description', 'cooldown')
-    mainRunes = MainRune.objects.values('id', 'name', 'slug', 'rarity', 'description')
+        'id', 'name', 'slug', 'rarity', 'description', 'cooldown').order_by("id")
+    mainRunes = MainRune.objects.values('id', 'name', 'slug', 'rarity', 'description').order_by("id")
     subRunes = SubRune.objects.select_related('type').values(
-        'id', 'name', 'slug', 'rarity', 'description', 'type__name', 'values')
+        'id', 'name', 'slug', 'rarity', 'description', 'type__name', 'values').order_by("id")
 
     companions_data = [
         {**companion, 'types': [type_.slug for type_ in Companion.objects.get(id=companion['id']).types.all()]}
