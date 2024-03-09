@@ -13,7 +13,6 @@ def create_types(apps, schema_editor):
     ]
     for type_name in types_list:
         Type.objects.create(slug=type_name)
-    User.objects.create_superuser('Leeauf', '', 'm!$NbA@kQDL3PNGT')
 
 
 class Migration(migrations.Migration):
