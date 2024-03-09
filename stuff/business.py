@@ -3,6 +3,36 @@ import json
 from stuff.models import Companion, MainRune, Skill, SubRune
 
 
+def return_all_data():
+    companions = Companion.objects.prefetch_related('types').distinct().values(
+        'id', 'name', 'slug', 'rarity', 'base_mp')
+    skills = Skill.objects.prefetch_related('types').values(
+        'id', 'name', 'slug', 'rarity', 'description', 'cooldown')
+    mainRunes = MainRune.objects.values('id', 'name', 'slug', 'rarity', 'description')
+    subRunes = SubRune.objects.select_related('type').values(
+        'id', 'name', 'slug', 'rarity', 'description', 'type__name', 'values')
+
+    companions_data = [
+        {**companion, 'types': [type_.slug for type_ in Companion.objects.get(id=companion['id']).types.all()]}
+        for companion in companions
+    ]
+
+    skills_data = [
+        {**skill, 'types': [type_.slug for type_ in Skill.objects.get(id=skill['id']).types.all()]}
+        for skill in skills
+    ]
+
+    response_data = {
+        'companions': companions_data,
+        'skills': skills_data,
+        'mainRunes': list(mainRunes),
+        'subRunes': list(subRunes),
+        'rarities': ["common", "uncommon", "rare", "epic", "legendary", "mythic"],
+    }
+
+    return response_data
+
+
 def calculate_mp(companions_list, sub_rune_list):
     max_mp = 30
 
@@ -38,19 +68,16 @@ def calculate_mp(companions_list, sub_rune_list):
     for condition in sub_runes_conditions:
         sub_runes |= SubRune.objects.filter(**condition)
 
-    sub_runes = [SubRune.objects.get(slug="animal-mp-improved", rarity="legendary"),  # to remove
-                 SubRune.objects.get(slug="max-mp-increased", rarity="legendary"),  # to remove
-                 ]  # to remove
-
     for sub_rune in sub_runes:
-        if sub_rune.type.name == "increase_max_mp":
-            max_mp += int(sub_rune.values[0])
-        elif sub_rune.type.name == "reduce_mp_for_companion_type_and_rarity":
-            mp_reduction, companion_type, rarity = sub_rune.values
-            for companion, data in detailed_companion_list.items():
-                if companion_type in data["types"]:
-                    if rarity == "all" or rarity == data["rarity"]:
-                        detailed_companion_list[companion]["mp_cost"] -= int(mp_reduction)
+        if sub_rune.type:
+            if sub_rune.type.name == "increase_max_mp":
+                max_mp += int(sub_rune.values[0])
+            elif sub_rune.type.name == "reduce_mp_for_companion_type_and_rarity":
+                mp_reduction, companion_type, rarity = sub_rune.values
+                for companion, data in detailed_companion_list.items():
+                    if companion_type in data["types"]:
+                        if rarity == "all" or rarity == data["rarity"]:
+                            detailed_companion_list[companion]["mp_cost"] -= int(mp_reduction)
     total_mp_cost = sum(data["mp_cost"] for data in detailed_companion_list.values())
     return (total_mp_cost, max_mp)
 
@@ -71,12 +98,8 @@ def get_equipment_info(equipment_list, model):
     result = []
     for equipment in equipment_list:
         if 'id' in equipment:
-            if model == MainRune:  # to remove
-                equipment_id = equipment['id'] - 111  # to remove
-            else:  # to remove
-                equipment_id = equipment['id']  # to remove
             try:
-                item = model.objects.get(id=equipment_id)
+                item = model.objects.get(id=equipment['id'])
                 data = {'slug': item.slug, 'rarity': item.rarity}
                 if 'level' in equipment:
                     data["level"] = equipment["level"]

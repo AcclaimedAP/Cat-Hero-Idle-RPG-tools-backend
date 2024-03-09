@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views import View
 from builds.models import BuildModel
-from stuff.business import calculate_mp, get_list_data
+from stuff.business import calculate_mp, get_list_data, return_all_data
 
 
 class GetMPInfo(View):
@@ -17,6 +17,11 @@ class GetMPInfo(View):
             'maxMp': maxMp
         }
         return JsonResponse(response_data)
+
+
+class GetAllStuffData(View):
+    def get(self, request):
+        return JsonResponse(return_all_data())
 
 
 class GetBuildInfo(View):
