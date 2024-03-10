@@ -1,14 +1,14 @@
 from django.contrib import admin
-from django import forms
-from stuff.models import Companion, Rune, Skill, Type, RuneType
-from django.utils.safestring import mark_safe
+from stuff.models import Companion, MainRune, SubRune, Skill
+# from django import forms
+# from django.utils.safestring import mark_safe
 
 
 class CompanionAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     list_display = (
-        "id",
         "name",
+        "slug",
         "rarity",
         "base_mp",
         "display_types",
@@ -27,8 +27,8 @@ admin.site.register(Companion, CompanionAdmin)
 class SkillAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     list_display = (
-        "id",
         "name",
+        "slug",
         "rarity",
         "description",
         "cooldown",
@@ -45,51 +45,50 @@ class SkillAdmin(admin.ModelAdmin):
 admin.site.register(Skill, SkillAdmin)
 
 
-class RuneAdminForm(forms.ModelForm):
-    class Meta:
-        model = Rune
-        fields = '__all__'
-        widgets = {
-            'values': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
-        }
+# class RuneAdminForm(forms.ModelForm):
+#     class Meta:
+#         model = SubRune
+#         fields = '__all__'
+#         widgets = {
+#             'values': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
+#         }
 
-    def __init__(self, *args, **kwargs):
-        super(RuneAdminForm, self).__init__(*args, **kwargs)
-        self.fields['values'].help_text = mark_safe("""
-        <div>
-            <p>Be sure to include the right values :</p>
-            <ul>
-                <li>'increase_crit_percent': ["percentage"],</li>
-                <li>'atk_boost': ["percentage"],</li>
-                <li>'fish_dmg_boost': ["percentage"],</li>
-                <li>'boss_dmg': ["percentage"],</li>
-                <li>'crit_dmg_boost': ["percentage"],</li>
-                <li>'triple_shot': ["percentage"],</li>
-                <li>'double_shot': ["percentage"],</li>
-                <li>'increase_all_dmg_per_companion_type': ["percentage", "companion_type"],</li>
-                <li>'increase_skill_type_dmg_per_companion_type': ["percentage", "type"],</li>
-                <li>'reduce_mp_for_companion_type_and_rarity': ["mp_reduction", "type", "rarity"],</li>
-                <li>'increase_skill_rarity_dmg_per_companion_rarity': ["percentage", "skill_rarity", "companion_rarity"],</li>
-                <li>'increase_final_dmg_after_skill': ["percentage", "duration", "skill_type"],</li>
-                <li>'increase_deal_ratio_per_companion_type': ["percentage", "type"],</li>
-                <li>'increase_crit_dmg_boost_per_companion_type': ["percentage", "type"],</li>
-                <li>'increase_crit_dmg_per_companion_type': ["percentage", "type"],</li>
-                <li>'increase_max_mp': ["mp_increase"]</li>
-            </ul>
-        </div>
-        """)
+#     def __init__(self, *args, **kwargs):
+#         super(RuneAdminForm, self).__init__(*args, **kwargs)
+#         self.fields['values'].help_text = mark_safe("""
+#         <div>
+#             <p>Be sure to include the right values :</p>
+#             <ul>
+#                 <li>'increase_crit_percent': ["percentage"],</li>
+#                 <li>'atk_boost': ["percentage"],</li>
+#                 <li>'fish_dmg_boost': ["percentage"],</li>
+#                 <li>'boss_dmg': ["percentage"],</li>
+#                 <li>'crit_dmg_boost': ["percentage"],</li>
+#                 <li>'triple_shot': ["percentage"],</li>
+#                 <li>'double_shot': ["percentage"],</li>
+#                 <li>'increase_all_dmg_per_companion_type': ["percentage", "companion_type"],</li>
+#                 <li>'increase_skill_type_dmg_per_companion_type': ["percentage", "type"],</li>
+#                 <li>'reduce_mp_for_companion_type_and_rarity': ["mp_reduction", "type", "rarity"],</li>
+#                 <li>'increase_skill_rarity_dmg_per_companion_rarity': ["percentage", "skill_rarity", "companion_rarity"],</li>
+#                 <li>'increase_final_dmg_after_skill': ["percentage", "duration", "skill_type"],</li>
+#                 <li>'increase_deal_ratio_per_companion_type': ["percentage", "type"],</li>
+#                 <li>'increase_crit_dmg_boost_per_companion_type': ["percentage", "type"],</li>
+#                 <li>'increase_crit_dmg_per_companion_type': ["percentage", "type"],</li>
+#                 <li>'increase_max_mp': ["mp_increase"]</li>
+#             </ul>
+#         </div>
+#         """)
 
-
-class RuneAdmin(admin.ModelAdmin):
-    form = RuneAdminForm
+class MainRuneAdmin(admin.ModelAdmin):
+    # form = RuneAdminForm
     search_fields = ["name"]
     list_display = (
-        "id",
         "name",
+        "slug",
         "rarity",
         "description",
-        "display_types",
-        "values",
+        # "display_types",
+        # "values",
     )
 
     ordering = ("id",)
@@ -100,4 +99,22 @@ class RuneAdmin(admin.ModelAdmin):
     display_types.short_description = 'Types'
 
 
-admin.site.register(Rune, RuneAdmin)
+admin.site.register(MainRune, MainRuneAdmin)
+
+
+class SubRuneAdmin(admin.ModelAdmin):
+    # form = RuneAdminForm
+    search_fields = ["name"]
+    list_display = (
+        "name",
+        "slug",
+        "rarity",
+        "description",
+        "type",
+        "values",
+    )
+
+    ordering = ("id",)
+
+
+admin.site.register(SubRune, SubRuneAdmin)

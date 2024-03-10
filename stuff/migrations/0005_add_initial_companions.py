@@ -69,12 +69,8 @@ def create_companions(apps, schema_editor):
         {'name': "Captain Specter", 'rarity': "mythic", 'base_mp': 12, 'types': ['large', 'pirate']},
     ]
 
-    for i, companion in enumerate(companions_data):
-        companion['id'] = i
-
     for companion_data in companions_data:
         companion, created = Companion.objects.get_or_create(
-            id=companion_data["id"],
             name=companion_data['name'],
             rarity=companion_data['rarity'],
             base_mp=companion_data['base_mp'],
