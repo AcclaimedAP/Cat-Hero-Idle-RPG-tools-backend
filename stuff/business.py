@@ -33,17 +33,14 @@ def return_all_data():
     return response_data
 
 
-def calculate_mp(companions_list, sub_rune_list):
-    max_mp = 30
-
+def calculate_mp(companions_list, sub_rune_list, maxMp):
     companion_slugs = [companion['slug'] for companion in companions_list if companion != {}]
     companions = Companion.objects.filter(slug__in=companion_slugs).prefetch_related('types')
 
     detailed_companion_list = {}
     for companion in companions:
         base_mp_adjustment = 0
-        companion_level = next((item['level'] for item in companions_list if item['slug'] == companion.slug), None)
-
+        companion_level = next((item['level'] for item in companions_list if 'slug' in item and item['slug'] == companion.slug), None)
         if companion.slug in ['lulu', 'jack-striker'] and companion_level is not None:
             if companion_level >= 111:
                 base_mp_adjustment = 3
@@ -71,7 +68,7 @@ def calculate_mp(companions_list, sub_rune_list):
     for sub_rune in sub_runes:
         if sub_rune.type:
             if sub_rune.type.name == "increase_max_mp":
-                max_mp += int(sub_rune.values[0])
+                maxMp += int(sub_rune.values[0])
             elif sub_rune.type.name == "reduce_mp_for_companion_type_and_rarity":
                 mp_reduction, companion_type, rarity = sub_rune.values
                 for companion, data in detailed_companion_list.items():
@@ -79,7 +76,7 @@ def calculate_mp(companions_list, sub_rune_list):
                         if rarity == "all" or rarity == data["rarity"]:
                             detailed_companion_list[companion]["mp_cost"] -= int(mp_reduction)
     total_mp_cost = sum(data["mp_cost"] for data in detailed_companion_list.values())
-    return (total_mp_cost, max_mp)
+    return (total_mp_cost, maxMp)
 
 
 def get_list_data(build_string):
@@ -91,6 +88,7 @@ def get_list_data(build_string):
         get_equipment_info(equipment_data['skillList'], Skill),
         get_equipment_info(equipment_data['mainRuneList'], MainRune),
         get_equipment_info(equipment_data['subRuneList'], SubRune),
+        equipment_data["maxMp"]
     )
 
 
