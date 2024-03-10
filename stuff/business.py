@@ -89,7 +89,7 @@ def get_list_data(build_string):
         get_equipment_info(equipment_data['mainRuneList'], MainRune),
         get_equipment_info(equipment_data['subRuneList'], SubRune),
         equipment_data["mp"],
-        equipment_data["maxMp"]
+        equipment_data["baseMp"]
     )
 
 
