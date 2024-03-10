@@ -48,16 +48,12 @@ def create_skills(apps, schema_editor):
         {'name': 'Dreadnought Whale', 'rarity': 'legendary', 'description': 'Summons a dreadnought whale that moves forward dealing AoE DMG of 1200% of ATK 3 times a second.', 'cooldown': 75.0, 'types': ['machine', 'pirate']},
         {'name': 'Bombshell Rain', 'rarity': 'mythic', 'description': 'Pours down several bombshells from the sky. The skill lasts for 20s showering 5 bombshells per second. Each bombshell deals 60000% DMG to the enemy.', 'cooldown': 100.0, 'types': ['machine']},
         {'name': 'Shaman Cat', 'rarity': 'mythic', 'description': 'Summons a shaman cat. The shaman cat summons 3 clouds that strike red lightning. The clouds last for 10s, dealing DMG of 4 times the second. The red lightning deals 200% of DMG at an area at first attack, and the DMG increases by 200% every attack.', 'cooldown': 100.0, 'types': ['magic', 'cat', 'cloud']},
-        {'name': 'Cat Heros', 'rarity': 'mythic', 'description': 'Opens a door in the sky for 10s, and uses an enhanced skill additionally upon casting a Cat type skill of legendary grade and under. The enhanced skill deals extra DMG of 2000% of the original skill DMG.', 'cooldown': 100.0, 'types': ['cat', 'magic', 'cloud']},
+        {'name': 'Cat Heroes', 'rarity': 'mythic', 'description': 'Opens a door in the sky for 10s, and uses an enhanced skill additionally upon casting a Cat type skill of legendary grade and under. The enhanced skill deals extra DMG of 2000% of the original skill DMG.', 'cooldown': 100.0, 'types': ['cat', 'magic', 'cloud']},
         {'name': 'Ocean\'s Punishment', 'rarity': 'mythic', 'description': 'Leaves a Shark Sign on all enemies. The sign stores the DMG received by the target. Deals 3000% of ATK after the sign, and then additionally deals 1500% DMG stored in the sign.', 'cooldown': 40.0, 'types': ['shark', 'pirate']}
     ]
 
-    for i, skill in enumerate(skills_data):
-        skill['id'] = i
-
     for skill_data in skills_data:
         skill, created = Skill.objects.get_or_create(
-            id=skill_data["id"],
             name=skill_data['name'],
             rarity=skill_data['rarity'],
             description=skill_data['description'],
