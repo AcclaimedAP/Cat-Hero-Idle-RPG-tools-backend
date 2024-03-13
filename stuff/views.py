@@ -17,7 +17,7 @@ class GetMPInfo(View):
         return self.build_response(build_string)
 
     def build_response(self, build_string):
-        companions_list, _, _, sub_rune_list, baseMp, maxMp = get_list_data(build_string)
+        companions_list, _, _, sub_rune_list, _, baseMp = get_list_data(build_string)
         mp, maxMp = calculate_mp(companions_list, sub_rune_list, baseMp)
         response_data = {
             'mp': mp,
@@ -40,8 +40,7 @@ class GetBuildInfo(View):
         return self.build_response(build)
 
     def build_response(self, build):
-        companions_list, skill_list, main_rune_list, sub_rune_list, _, maxMp = get_list_data(build.build_string)
-        mp, maxMp = calculate_mp(companions_list, sub_rune_list, maxMp)
+        companions_list, skill_list, main_rune_list, sub_rune_list, mp, maxMp = get_list_data(build.build_string)
         response_data = {
             'companions': companions_list,
             'skills': skill_list,
