@@ -4,19 +4,26 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .models import BuildModel
 from django.utils import timezone
+import json
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class BuildCreateView(View):
     def post(self, request):
-        build_string = request.body.decode('utf-8').strip()
-        if not build_string:
-            return JsonResponse({'error': 'Invalid build string'}, status=400)
+        try:
+            build_data = json.loads(request.body.decode('utf-8'))
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
-        build, created = BuildModel.objects.get_or_create(build_string=build_string)
+        if not build_data:
+            return JsonResponse({'error': 'Empty Build'}, status=400)
+
+        build, created = BuildModel.objects.get_or_create(build=build_data)
         if created:
             build.last_accessed = timezone.now()
-        status_code = 201 if created else 200  # 201 Created if new object was created, else 200 OK
+            build.save(update_fields=['last_accessed'])
+
+        status_code = 201 if created else 200
         return JsonResponse({'build_id': build.id}, status=status_code)
 
 
@@ -25,6 +32,6 @@ class BuildDetailView(View):
     def get(self, request, build_id):
         try:
             build = BuildModel.objects.get(id=build_id)
-            return JsonResponse({'build': build.build_string})
+            return JsonResponse({'build': build.build})
         except BuildModel.DoesNotExist:
             return JsonResponse({'error': 'No build found'}, status=404)

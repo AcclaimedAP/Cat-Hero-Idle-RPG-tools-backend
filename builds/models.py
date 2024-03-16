@@ -12,12 +12,9 @@ def generate_random_id():
 class BuildModel(models.Model):
     id = models.CharField(max_length=6, primary_key=True,
                           default=generate_random_id, editable=False)
-    build_string = models.CharField(max_length=9000)
+    build = models.JSONField()
     created = models.DateTimeField(auto_now_add=True)
     last_accessed = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.build_string
 
     @property
     def unused(self):
