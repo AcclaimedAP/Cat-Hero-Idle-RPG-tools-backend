@@ -1,5 +1,3 @@
-import base64
-import json
 from stuff.models import Companion, MainRune, Skill, SubRune
 
 
