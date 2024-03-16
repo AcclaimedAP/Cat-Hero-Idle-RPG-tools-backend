@@ -1,5 +1,3 @@
-import base64
-import json
 from stuff.models import Companion, MainRune, Skill, SubRune
 
 
@@ -33,7 +31,7 @@ def return_all_data():
     return response_data
 
 
-def calculate_mp(companions_list, sub_rune_list, maxMp):
+def calculate_mp(companions_list, sub_rune_list, baseMp):
     companion_slugs = [companion['slug'] for companion in companions_list if companion != {}]
     companions = Companion.objects.filter(slug__in=companion_slugs).prefetch_related('types')
 
@@ -68,7 +66,7 @@ def calculate_mp(companions_list, sub_rune_list, maxMp):
     for sub_rune in sub_runes:
         if sub_rune.type:
             if sub_rune.type.name == "increase_max_mp":
-                maxMp += int(sub_rune.values[0])
+                baseMp += int(sub_rune.values[0])
             elif sub_rune.type.name == "reduce_mp_for_companion_type_and_rarity":
                 mp_reduction, companion_type, rarity = sub_rune.values
                 for companion, data in detailed_companion_list.items():
@@ -76,21 +74,24 @@ def calculate_mp(companions_list, sub_rune_list, maxMp):
                         if rarity == "all" or rarity == data["rarity"]:
                             detailed_companion_list[companion]["mp_cost"] -= int(mp_reduction)
     total_mp_cost = sum(data["mp_cost"] for data in detailed_companion_list.values())
-    return (total_mp_cost, maxMp)
+    return (total_mp_cost, baseMp)
 
 
-def get_list_data(build_string):
-    decoded_collection_string = base64.b64decode(build_string).decode('utf-8')
-    _, equipment_string = decoded_collection_string.split('|')
-    equipment_data = json.loads(equipment_string)
+def get_list_data(equipment_data):
     return (
         get_equipment_info(equipment_data['companionsList'], Companion),
         get_equipment_info(equipment_data['skillList'], Skill),
         get_equipment_info(equipment_data['mainRuneList'], MainRune),
         get_equipment_info(equipment_data['subRuneList'], SubRune),
-        equipment_data["mp"],
-        equipment_data["baseMp"]
     )
+
+
+def get_base_mp(equipment_data):
+    base_mp = 15
+    mp_research_level = int(equipment_data["mpResearchLevel"])
+    additionalMp = int(equipment_data["additionalMp"])
+
+    return base_mp + mp_research_level + additionalMp
 
 
 def get_equipment_info(equipment_list, model):

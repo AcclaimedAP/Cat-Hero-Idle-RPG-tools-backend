@@ -2,22 +2,21 @@ import json
 from django.http import JsonResponse
 from django.views import View
 from builds.models import BuildModel
-from stuff.business import calculate_mp, get_list_data, return_all_data
+from stuff.business import calculate_mp, get_list_data, return_all_data, get_base_mp
 
 
 class GetMPInfo(View):
     def post(self, request):
         try:
-            body_unicode = request.body.decode('utf-8')
-            body_data = json.loads(body_unicode)
-            build_string = body_data.get('build_string', '')
+            equipment_data = json.loads(request.body)
         except (ValueError, KeyError):
             return JsonResponse({'error': 'Invalid request'}, status=400)
 
-        return self.build_response(build_string)
+        return self.build_response(equipment_data)
 
-    def build_response(self, build_string):
-        companions_list, _, _, sub_rune_list, _, baseMp = get_list_data(build_string)
+    def build_response(self, equipment_data):
+        companions_list, _, _, sub_rune_list = get_list_data(equipment_data)
+        baseMp = get_base_mp(equipment_data)
         mp, maxMp = calculate_mp(companions_list, sub_rune_list, baseMp)
         response_data = {
             'mp': mp,
@@ -40,7 +39,10 @@ class GetBuildInfo(View):
         return self.build_response(build)
 
     def build_response(self, build):
-        companions_list, skill_list, main_rune_list, sub_rune_list, mp, maxMp = get_list_data(build.build_string)
+        equipment = build.build["equipment"]
+        companions_list, skill_list, main_rune_list, sub_rune_list = get_list_data(equipment)
+        baseMp = get_base_mp(equipment)
+        mp, maxMp = calculate_mp(companions_list, sub_rune_list, baseMp)
         response_data = {
             'companions': companions_list,
             'skills': skill_list,
