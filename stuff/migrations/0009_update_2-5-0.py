@@ -24,7 +24,7 @@ def update(apps, schema_editor):
 
     wild_nature_skill, _ = Skill.objects.get_or_create(
         name='Wild Nature',
-        slug='wild_nature',
+        slug='wild-nature',
         rarity='mythic',
         description='Increases Wolf CRIT chance by 5% per Wolf companion equipped for 8s. The Wolf CRIT deals 3000% damage of the original CRIT DMG',
         cooldown=100.0,
