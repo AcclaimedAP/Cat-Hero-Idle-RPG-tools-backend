@@ -48,6 +48,13 @@ def update(apps, schema_editor):
     except Companion.DoesNotExist:
         pass
 
+    try:
+        skill = Skill.objects.get(slug='cat-heros')
+        skill.slug = 'cat-heroes'
+        skill.save()
+    except Skill.DoesNotExist:
+        pass
+
 
 class Migration(migrations.Migration):
 
