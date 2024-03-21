@@ -7,7 +7,7 @@ class BuildModelAdmin(admin.ModelAdmin):
     search_fields = ["id"]
     list_display = (
         "id",
-        "build_string",
+        "build",
         "created",
         "last_accessed",
     )
