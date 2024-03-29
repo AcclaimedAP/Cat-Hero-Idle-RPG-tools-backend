@@ -40,6 +40,7 @@ class GetBuildInfo(View):
 
     def build_response(self, build):
         equipment = build.build["equipment"]
+        print(equipment)
         companions_list, skill_list, main_rune_list, sub_rune_list = get_list_data(equipment)
         baseMp = get_base_mp(equipment)
         mp, maxMp = calculate_mp(companions_list, sub_rune_list, baseMp)
@@ -49,6 +50,7 @@ class GetBuildInfo(View):
             'mainRunes': main_rune_list,
             'subRunes': sub_rune_list,
             'mp': mp,
-            'maxMp': maxMp
+            'maxMp': maxMp,
+            'shoe': True if equipment["additionalMp"] > 0 else False
         }
         return JsonResponse(response_data)
