@@ -1,7 +1,7 @@
 from django.contrib import admin
 from stuff.models import Companion, MainRune, SubRune, Skill
+from django.utils.safestring import mark_safe
 # from django import forms
-# from django.utils.safestring import mark_safe
 
 
 class CompanionAdmin(admin.ModelAdmin):
@@ -12,9 +12,21 @@ class CompanionAdmin(admin.ModelAdmin):
         "rarity",
         "base_mp",
         "display_types",
+        "affected_skill_name",
+        "get_cooldown_per_level_display"
     )
     filter_horizontal = ("types",)
     ordering = ("id",)
+
+    def get_cooldown_per_level_display(self, obj):
+        cooldown_display = "<br>".join([f"Level {level}: {cooldown}%" for level, cooldown in obj.cooldown_per_level.items()])
+        return mark_safe(cooldown_display)
+    get_cooldown_per_level_display.short_description = 'Cooldown Per Level'
+    get_cooldown_per_level_display.allow_tags = True
+
+    def affected_skill_name(self, obj):
+        return obj.affected_skill.name if obj.affected_skill else '-'
+    affected_skill_name.short_description = 'Affected Skill'
 
     def display_types(self, obj):
         return ", ".join([type.slug for type in obj.types.all()])
