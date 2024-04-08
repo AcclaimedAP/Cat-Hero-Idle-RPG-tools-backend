@@ -4,7 +4,7 @@ from .models import ExchangeTrade
 
 
 class ExchangeTradeAdmin(admin.ModelAdmin):
-    search_fields = ["title"]
+    search_fields = ["exchange_uuid"]
     list_display = (
         "exchange_uuid",
         "price",
