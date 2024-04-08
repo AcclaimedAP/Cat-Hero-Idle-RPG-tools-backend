@@ -19,20 +19,25 @@ class ExchangeCreateView(View):
         try:
             exchange_data = json.loads(request.body)
             for exchange_uuid, data in exchange_data.items():
-                listing_time_parsed = parse_datetime(data.get('listing_time'))
+                if 'expired' in data:
+                    exchange_uuid_obj = uuid.UUID(exchange_uuid)
+                    ExchangeTrade.objects.filter(exchange_uuid=exchange_uuid_obj).delete()
+                else:
+                    listing_time_parsed = parse_datetime(data.get('listing_time'))
+                    exchange_uuid = uuid.UUID(exchange_uuid)
 
-                ExchangeTrade.objects.update_or_create(
-                    exchange_uuid=uuid.UUID(exchange_uuid),
-                    defaults={
-                        'price': data.get('price'),
-                        'listing_time': listing_time_parsed,
-                        'gear_type': data.get('gear_type'),
-                        'rarity': data.get('rarity'),
-                        'level': data.get('level', 0),
-                        'exchange_left': data.get('exchange_left', 0),
-                        'durability': data.get('durability', 0),
-                    }
-                )
+                    ExchangeTrade.objects.update_or_create(
+                        exchange_uuid=exchange_uuid,
+                        defaults={
+                            'price': data.get('price'),
+                            'listing_time': listing_time_parsed,
+                            'gear_type': data.get('gear_type'),
+                            'rarity': data.get('rarity'),
+                            'level': data.get('level', 0),
+                            'exchange_left': data.get('exchange_left', 0),
+                            'durability': data.get('durability', 0),
+                        }
+                    )
 
             return JsonResponse({'status': 'success', 'message': 'Exchange trades created/updated successfully.'}, status=200)
 
