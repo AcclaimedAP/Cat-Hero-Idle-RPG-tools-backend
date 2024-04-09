@@ -12,6 +12,8 @@ import matplotlib.dates as mdates
 from django.utils import timezone
 from django.db import models
 import seaborn as sns
+from django.db.models import Avg, Case, Value, CharField
+from django.db.models.functions import ExtractHour
 
 
 class ExchangeCreateView(View):
@@ -19,20 +21,25 @@ class ExchangeCreateView(View):
         try:
             exchange_data = json.loads(request.body)
             for exchange_uuid, data in exchange_data.items():
-                listing_time_parsed = parse_datetime(data.get('listing_time'))
+                if 'expired' in data:
+                    exchange_uuid_obj = uuid.UUID(exchange_uuid)
+                    ExchangeTrade.objects.filter(exchange_uuid=exchange_uuid_obj).delete()
+                else:
+                    listing_time_parsed = parse_datetime(data.get('listing_time'))
+                    exchange_uuid = uuid.UUID(exchange_uuid)
 
-                ExchangeTrade.objects.update_or_create(
-                    exchange_uuid=uuid.UUID(exchange_uuid),
-                    defaults={
-                        'price': data.get('price'),
-                        'listing_time': listing_time_parsed,
-                        'gear_type': data.get('gear_type'),
-                        'rarity': data.get('rarity'),
-                        'level': data.get('level', 0),
-                        'exchange_left': data.get('exchange_left', 0),
-                        'durability': data.get('durability', 0),
-                    }
-                )
+                    ExchangeTrade.objects.update_or_create(
+                        exchange_uuid=exchange_uuid,
+                        defaults={
+                            'price': data.get('price'),
+                            'listing_time': listing_time_parsed,
+                            'gear_type': data.get('gear_type'),
+                            'rarity': data.get('rarity'),
+                            'level': data.get('level', 0),
+                            'exchange_left': data.get('exchange_left', 0),
+                            'durability': data.get('durability', 0),
+                        }
+                    )
 
             return JsonResponse({'status': 'success', 'message': 'Exchange trades created/updated successfully.'}, status=200)
 
@@ -71,10 +78,12 @@ class CreateGraphView(View):
         ax = fig.add_subplot(111)
 
         ax.plot(dates, prices, marker='o', linestyle='-', color='darkcyan', markersize=8, linewidth=2, label='Price Trend')
+        from matplotlib.ticker import MaxNLocator
 
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-        ax.xaxis.set_major_locator(mdates.DayLocator())
+        ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
         fig.autofmt_xdate(rotation=45)
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
         title = self.generate_title(days, gear_type, rarity, level, durability)
         ax.set_title(title, fontsize=14, fontweight='bold')
@@ -91,6 +100,22 @@ class CreateGraphView(View):
         canvas.print_png(buf)
         return buf
 
+    def convert_to_datetime(self, queryset):
+        from datetime import datetime, time
+        new_data = []
+        for entry in queryset:
+            day = entry['listing_day']
+            if entry['half_day_interval'] == 'AM':
+                new_time = time.min
+            else:
+                new_time = time(12, 0)
+            new_datetime = datetime.combine(day, new_time)
+            new_data.append({
+                'listing_day': new_datetime,
+                'average_price': entry['average_price']
+            })
+        return new_data
+
     def filter_and_group_trades(self, gear_type, rarity, level, durability, start_date):
         trades = ExchangeTrade.objects.filter(listing_time__gte=start_date)
 
@@ -102,12 +127,24 @@ class CreateGraphView(View):
             trades = trades.filter(level=level)
         if durability is not None:
             trades = trades.filter(durability=durability)
-        trades_grouped = trades.extra(select={'listing_day': "date(listing_time)"}).values('listing_day').annotate(average_price=models.Avg('price')).order_by('listing_day')
-        return list(trades_grouped)
+
+        trades_grouped = trades.annotate(
+            hour=ExtractHour('listing_time'),
+            listing_day=models.functions.Trunc('listing_time', 'day', output_field=models.DateField())
+        ).annotate(
+            half_day_interval=Case(
+                models.When(hour__lt=12, then=Value('AM')),
+                default=Value('PM'),
+                output_field=CharField(),
+            )
+        ).values('listing_day', 'half_day_interval').annotate(
+            average_price=Avg('price')
+        ).order_by('listing_day', 'half_day_interval')
+        return list(self.convert_to_datetime(trades_grouped))
 
     def generate_title(self, days, gear_type, rarity, level, durability):
         title = 'Price Evolution'
-        if rarity.lower() is not None:
+        if rarity.lower() != 'all':
             title += f" for {rarity.capitalize()}"
         if gear_type.lower() != 'all':
             title += f" {gear_type.capitalize()}"
