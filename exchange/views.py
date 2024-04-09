@@ -63,14 +63,17 @@ class CreateGraphView(View):
 
         trades_grouped = self.filter_and_group_trades(gear_type, rarity, level, durability, start_date)
 
-        dates = [trade['listing_day'] for trade in trades_grouped]
-        prices = [trade['average_price'] for trade in trades_grouped]
+        if len(trades_grouped) > 4:
+            dates = [trade['listing_day'] for trade in trades_grouped]
+            prices = [trade['average_price'] for trade in trades_grouped]
 
-        buf = self.create_graph(days, gear_type, rarity, level, durability, dates, prices)
+            buf = self.create_graph(days, gear_type, rarity, level, durability, dates, prices)
 
-        response = HttpResponse(buf.getvalue(), content_type='image/png')
-        response['Content-Length'] = str(len(response.content))
-        return response
+            response = HttpResponse(buf.getvalue(), content_type='image/png')
+            response['Content-Length'] = str(len(response.content))
+            return response
+        else:
+            return JsonResponse({'error': 'Not enough data to create a graph, try searching with less specific parameters.'}, status=400)
 
     def create_graph(self, days, gear_type, rarity, level, durability, dates, prices):
         sns.set_theme(style="whitegrid")
