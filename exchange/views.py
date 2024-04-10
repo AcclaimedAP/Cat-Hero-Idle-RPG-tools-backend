@@ -75,7 +75,7 @@ class CreateGraphView(View):
             response['Content-Length'] = str(len(response.content))
             return response
         else:
-            return JsonResponse({'error': 'Not enough data to create a graph, try searching with less specific parameters.'}, status=400)
+            return JsonResponse({'error': 'Not enough data to create a graph, try searching with less specific parameters or for a longer period of time.'}, status=400)
 
     def create_graph(self, days, gear_type, rarity, level, durability, dates, prices):
         rarity_colors = {
@@ -92,22 +92,21 @@ class CreateGraphView(View):
         ax = fig.add_subplot(111)
 
         ax.plot(dates, prices, marker='o', linestyle='-', color=color, markersize=8, linewidth=2, label='Price Trend')
-
         ax.fill_between(dates, 0, prices, color=color, alpha=0.3)
 
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M'))
         ax.xaxis.set_major_locator(mdates.HourLocator(interval=12))
         fig.autofmt_xdate(rotation=45)
-
         ax.yaxis.set_major_locator(mdates.AutoDateLocator())
-
         ax.set_ylim(0, math.ceil(max(prices) / 1000) * 1000)
-
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
         title = self.generate_title(days, gear_type, rarity, level, durability)
         ax.set_title(title, fontsize=14, fontweight='bold', color=color)
+
         ax.set_xlabel('Date', fontsize=12)
+        ax.text(0.5, -0.3, "The prices for the last two days may not accurately represent the real market prices as not all trades have been confirmed as completed yet.",
+                fontsize=9, ha='center', va='bottom', transform=ax.transAxes, style='italic')
         ax.set_ylabel('Price (Black Gems)', fontsize=12)
         ax.grid(True, linestyle='--', alpha=0.5)
         ax.legend(loc='best')
