@@ -77,6 +77,20 @@ class CreateGraphView(View):
         else:
             return JsonResponse({'error': 'Not enough data to create a graph, try searching with less specific parameters or for a longer period of time.'}, status=400)
 
+    def calculate_limit(self, numbers):
+        from decimal import Decimal
+        if not numbers:
+            return Decimal('0'), Decimal('1')
+        min_num = min(numbers)
+        max_num = max(numbers)
+        range_num = max_num - min_num
+
+        if range_num == Decimal('0'):
+            return min_num - Decimal('1'), max_num + Decimal('1')
+
+        padding = range_num * Decimal('0.2')
+        return min_num - padding, max_num + padding
+
     def create_graph(self, days, gear_type, rarity, level, durability, dates, prices):
         rarity_colors = {
             "common": "#8598a7",
@@ -98,8 +112,8 @@ class CreateGraphView(View):
         ax.xaxis.set_major_locator(mdates.HourLocator(interval=12))
         fig.autofmt_xdate(rotation=45)
         ax.yaxis.set_major_locator(mdates.AutoDateLocator())
-        ax.set_ylim(0, math.ceil(max(prices) / 1000) * 1000)
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+        ax.set_ylim(self.calculate_limit(prices))
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True, steps=[1, 2, 5, 10]))
 
         title = self.generate_title(days, gear_type, rarity, level, durability)
         ax.set_title(title, fontsize=14, fontweight='bold', color=color)
