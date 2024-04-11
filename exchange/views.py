@@ -14,6 +14,8 @@ from django.db import models
 import seaborn as sns
 from django.db.models import Avg, Case, Value, CharField
 from django.db.models.functions import ExtractHour
+from matplotlib.ticker import MaxNLocator
+import math
 
 
 class ExchangeCreateView(View):
@@ -63,36 +65,67 @@ class CreateGraphView(View):
 
         trades_grouped = self.filter_and_group_trades(gear_type, rarity, level, durability, start_date)
 
-        dates = [trade['listing_day'] for trade in trades_grouped]
-        prices = [trade['average_price'] for trade in trades_grouped]
+        if len(trades_grouped) > 4:
+            dates = [trade['listing_day'] for trade in trades_grouped]
+            prices = [trade['average_price'] for trade in trades_grouped]
 
-        buf = self.create_graph(days, gear_type, rarity, level, durability, dates, prices)
+            buf = self.create_graph(days, gear_type, rarity, level, durability, dates, prices)
 
-        response = HttpResponse(buf.getvalue(), content_type='image/png')
-        response['Content-Length'] = str(len(response.content))
-        return response
+            response = HttpResponse(buf.getvalue(), content_type='image/png')
+            response['Content-Length'] = str(len(response.content))
+            return response
+        else:
+            return JsonResponse({'error': 'Not enough data to create a graph, try searching with less specific parameters or for a longer period of time.'}, status=400)
+
+    def calculate_limit(self, numbers):
+        from decimal import Decimal
+        if not numbers:
+            return Decimal('0'), Decimal('1')
+        min_num = min(numbers)
+        max_num = max(numbers)
+        range_num = max_num - min_num
+
+        if range_num == Decimal('0'):
+            return min_num - Decimal('1'), max_num + Decimal('1')
+
+        padding = range_num * Decimal('0.2')
+        return min_num - padding, max_num + padding
 
     def create_graph(self, days, gear_type, rarity, level, durability, dates, prices):
+        rarity_colors = {
+            "common": "#8598a7",
+            "uncommon": "#6db834",
+            "rare": "#4cafd1",
+            "epic": "#c16ee3",
+            "legendary": "#ee5b69",
+        }
+        color = rarity_colors.get(rarity.lower(), "black")
+
         sns.set_theme(style="whitegrid")
         fig = Figure(figsize=(10, 6), dpi=100)
         ax = fig.add_subplot(111)
 
-        ax.plot(dates, prices, marker='o', linestyle='-', color='darkcyan', markersize=8, linewidth=2, label='Price Trend')
-        from matplotlib.ticker import MaxNLocator
+        ax.plot(dates, prices, marker='o', linestyle='-', color=color, markersize=8, linewidth=2, label='Price Trend')
+        ax.fill_between(dates, 0, prices, color=color, alpha=0.3)
 
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-        ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M'))
+        ax.xaxis.set_major_locator(mdates.HourLocator(interval=12))
         fig.autofmt_xdate(rotation=45)
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+        ax.yaxis.set_major_locator(mdates.AutoDateLocator())
+        ax.set_ylim(self.calculate_limit(prices))
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True, steps=[1, 2, 5, 10]))
 
         title = self.generate_title(days, gear_type, rarity, level, durability)
-        ax.set_title(title, fontsize=14, fontweight='bold')
-        ax.set_xlabel('Date', fontsize=12)
-        ax.set_ylabel('Price (Black Gems)', fontsize=12)
-        ax.grid(True, which='both', linestyle='--', alpha=0.5)
+        ax.set_title(title, fontsize=14, fontweight='bold', color=color)
 
+        ax.set_xlabel('Date', fontsize=12)
+        ax.text(0.5, -0.3, "The prices for the last two days may not accurately represent the real market prices as not all trades have been confirmed as completed yet.",
+                fontsize=9, ha='center', va='bottom', transform=ax.transAxes, style='italic')
+        ax.set_ylabel('Price (Black Gems)', fontsize=12)
+        ax.grid(True, linestyle='--', alpha=0.5)
         ax.legend(loc='best')
 
+        ax.set_xlim([dates[0], dates[-1]])
         fig.tight_layout()
 
         buf = io.BytesIO()
