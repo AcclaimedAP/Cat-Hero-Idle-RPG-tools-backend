@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'exchange',
     'builds',
     'news',
-    "stuff"
+    "stuff",
+    "apikey"
 ]
 
 MIDDLEWARE = [
