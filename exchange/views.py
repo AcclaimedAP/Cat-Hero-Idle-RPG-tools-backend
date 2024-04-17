@@ -1,6 +1,8 @@
 from django.views.generic import View
 from django.http import JsonResponse
 from django.utils.dateparse import parse_datetime
+
+from apikey.models import ApiKey
 from .models import ExchangeTrade
 import uuid
 import json
@@ -15,7 +17,7 @@ import seaborn as sns
 from django.db.models import Avg, Case, Value, CharField
 from django.db.models.functions import ExtractHour
 from matplotlib.ticker import MaxNLocator
-import math
+from django.db.models import F
 
 
 class ExchangeCreateView(View):
@@ -49,21 +51,86 @@ class ExchangeCreateView(View):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
-class CreateGraphView(View):
+class GetExchangesView(View):
     def post(self, request, *args, **kwargs):
+        api_key = request.headers.get('X-API-KEY')
+        exist = ApiKey.objects.filter(id=api_key, usable=True).update(usage_count=F('usage_count') + 1)
+
+        if not exist:
+            return JsonResponse({'error': 'Invalid API Key'}, status=403)
+
         try:
             data = json.loads(request.body)
-            days = int(data.get('day', 0))
-            gear_type = data.get('type', 'all')
-            rarity = data.get('rarity', 'all')
+            days = int(data.get('day', 7))
+            gear_type = data.get('type', None)
+            rarity = data.get('rarity', None)
             level = data.get('level', None)
             durability = data.get('durability', None)
+            exchange_left = data.get('exchange_left', None)
+            start_date = timezone.now() - timezone.timedelta(days=days)
+            exchanges = self.filter_trades(gear_type, rarity, level, durability, exchange_left, start_date)
+
+            custom_data = self.format_data(exchanges)
+
+            return JsonResponse(custom_data, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    def format_data(self, exchanges):
+        custom_data = {}
+        for item in exchanges:
+            item_id = str(item.pk)
+            fields = {
+                'price': item.price,
+                'listing_time': item.listing_time,
+                'gear_type': item.gear_type,
+                'rarity': item.rarity,
+                'level': item.level,
+                'exchange_left': item.exchange_left,
+                'durability': item.durability
+            }
+            custom_data[item_id] = fields
+        return custom_data
+
+    def filter_trades(self, gear_type, rarity, level, durability, exchange_left, start_date):
+        trades = ExchangeTrade.objects.filter(listing_time__gte=start_date)
+
+        if gear_type.lower() is not None:
+            trades = trades.filter(gear_type=gear_type)
+        if rarity.lower() is not None:
+            trades = trades.filter(rarity=rarity)
+        if level is not None:
+            trades = trades.filter(level=level)
+        if durability is not None:
+            trades = trades.filter(durability=durability)
+        if exchange_left is not None:
+            trades = trades.filter(exchange_left=exchange_left)
+        return trades
+
+
+class CreateGraphView(View):
+    def post(self, request, *args, **kwargs):
+        api_key = request.headers.get('X-API-KEY')
+        exist = ApiKey.objects.filter(id=api_key, usable=True).update(usage_count=F('usage_count') + 1)
+
+        if not exist:
+            return JsonResponse({'error': 'Invalid API Key'}, status=403)
+
+        try:
+            data = json.loads(request.body)
+            days = int(data.get('day', 7))
+            gear_type = data.get('type', None)
+            rarity = data.get('rarity', None)
+            level = data.get('level', None)
+            durability = data.get('durability', None)
+            exchange_left = data.get('exchange_left', None)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
         start_date = timezone.now() - timezone.timedelta(days=days)
 
-        trades_grouped = self.filter_and_group_trades(gear_type, rarity, level, durability, start_date)
+        trades_grouped = self.filter_and_group_trades(gear_type, rarity, level, durability, exchange_left, start_date)
 
         if len(trades_grouped) > 4:
             dates = [trade['listing_day'] for trade in trades_grouped]
@@ -149,17 +216,19 @@ class CreateGraphView(View):
             })
         return new_data
 
-    def filter_and_group_trades(self, gear_type, rarity, level, durability, start_date):
+    def filter_and_group_trades(self, gear_type, rarity, level, durability, exchange_left, start_date):
         trades = ExchangeTrade.objects.filter(listing_time__gte=start_date)
 
-        if gear_type.lower() != 'all':
+        if gear_type.lower() is not None:
             trades = trades.filter(gear_type=gear_type)
-        if rarity.lower() != 'all':
+        if rarity.lower() is not None:
             trades = trades.filter(rarity=rarity)
         if level is not None:
             trades = trades.filter(level=level)
         if durability is not None:
             trades = trades.filter(durability=durability)
+        if exchange_left is not None:
+            trades = trades.filter(exchange_left=exchange_left)
 
         trades_grouped = trades.annotate(
             hour=ExtractHour('listing_time'),
