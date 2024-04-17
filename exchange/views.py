@@ -67,8 +67,9 @@ class GetExchangesView(View):
             level = data.get('level', None)
             durability = data.get('durability', None)
             exchange_left = data.get('exchange_left', None)
+            order_by = data.get('order_by', None)
             start_date = timezone.now() - timezone.timedelta(days=days)
-            exchanges = self.filter_trades(gear_type, rarity, level, durability, exchange_left, start_date)
+            exchanges = self.filter_trades(gear_type, rarity, level, durability, exchange_left, order_by, start_date)
 
             custom_data = self.format_data(exchanges)
 
@@ -93,12 +94,12 @@ class GetExchangesView(View):
             custom_data[item_id] = fields
         return custom_data
 
-    def filter_trades(self, gear_type, rarity, level, durability, exchange_left, start_date):
+    def filter_trades(self, gear_type, rarity, level, durability, exchange_left, order_by, start_date):
         trades = ExchangeTrade.objects.filter(listing_time__gte=start_date)
 
-        if gear_type.lower() is not None:
+        if gear_type is not None:
             trades = trades.filter(gear_type=gear_type)
-        if rarity.lower() is not None:
+        if rarity is not None:
             trades = trades.filter(rarity=rarity)
         if level is not None:
             trades = trades.filter(level=level)
@@ -106,6 +107,8 @@ class GetExchangesView(View):
             trades = trades.filter(durability=durability)
         if exchange_left is not None:
             trades = trades.filter(exchange_left=exchange_left)
+        if order_by is not None:
+            trades = trades.order_by(order_by)
         return trades
 
 
@@ -219,9 +222,9 @@ class CreateGraphView(View):
     def filter_and_group_trades(self, gear_type, rarity, level, durability, exchange_left, start_date):
         trades = ExchangeTrade.objects.filter(listing_time__gte=start_date)
 
-        if gear_type.lower() is not None:
+        if gear_type is not None:
             trades = trades.filter(gear_type=gear_type)
-        if rarity.lower() is not None:
+        if rarity is not None:
             trades = trades.filter(rarity=rarity)
         if level is not None:
             trades = trades.filter(level=level)
@@ -246,9 +249,9 @@ class CreateGraphView(View):
 
     def generate_title(self, days, gear_type, rarity, level, durability):
         title = 'Price Evolution'
-        if rarity.lower() != 'all':
+        if rarity != 'all':
             title += f" for {rarity.capitalize()}"
-        if gear_type.lower() != 'all':
+        if gear_type != 'all':
             title += f" {gear_type.capitalize()}"
         else:
             title += " gear"
