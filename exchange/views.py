@@ -68,8 +68,9 @@ class GetExchangesView(View):
             durability = data.get('durability', None)
             exchange_left = data.get('exchange_left', None)
             order_by = data.get('order_by', None)
+            max_price = data.get('max_price', None)
             start_date = timezone.now() - timezone.timedelta(days=days)
-            exchanges = self.filter_trades(gear_type, rarity, level, durability, exchange_left, order_by, start_date)
+            exchanges = self.filter_trades(gear_type, rarity, level, durability, exchange_left, max_price, order_by, start_date)
 
             custom_data = self.format_data(exchanges)
 
@@ -94,7 +95,7 @@ class GetExchangesView(View):
             custom_data[item_id] = fields
         return custom_data
 
-    def filter_trades(self, gear_type, rarity, level, durability, exchange_left, order_by, start_date):
+    def filter_trades(self, gear_type, rarity, level, durability, exchange_left, max_price, order_by, start_date):
         trades = ExchangeTrade.objects.filter(listing_time__gte=start_date)
 
         if gear_type is not None:
@@ -107,6 +108,8 @@ class GetExchangesView(View):
             trades = trades.filter(durability=durability)
         if exchange_left is not None:
             trades = trades.filter(exchange_left=exchange_left)
+        if max_price is not None:
+            trades = trades.filter(price__lte=max_price)
         if order_by is not None:
             trades = trades.order_by(order_by)
         return trades
