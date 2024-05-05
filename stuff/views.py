@@ -51,6 +51,6 @@ class GetBuildInfo(View):
             'subRunes': sub_rune_list,
             'mp': mp,
             'maxMp': maxMp,
-            'shoe': True if equipment["additionalMp"] > 0 else False
+            'shoe': True if equipment.get("additionalMp", 0) > 0 else False
         }
         return JsonResponse(response_data)
