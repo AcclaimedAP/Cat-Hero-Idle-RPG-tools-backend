@@ -88,8 +88,8 @@ def get_list_data(equipment_data):
 
 def get_base_mp(equipment_data):
     base_mp = 15
-    mp_research_level = int(equipment_data["mpResearchLevel"])
-    additionalMp = int(equipment_data["additionalMp"])
+    mp_research_level = int(equipment_data.get("mpResearchLevel", 15))
+    additionalMp = int(equipment_data.get("additionalMp", 0))
 
     return base_mp + mp_research_level + additionalMp
 
