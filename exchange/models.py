@@ -17,7 +17,7 @@ class ExchangeTrade(models.Model):
         ('legendary', 'Legendary'),
     ]
     exchange_uuid = models.UUIDField(unique=True, primary_key=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=16, decimal_places=2)
     listing_time = models.DateTimeField()
     rarity = models.CharField(max_length=50, choices=RARITY_CHOICES)
     gear_type = models.CharField(max_length=50, choices=TYPE_CHOICES)
