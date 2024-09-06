@@ -18,7 +18,6 @@ class Companion(models.Model):
     base_mp = models.IntegerField()
     types = models.ManyToManyField('Type')
     affected_skill = models.ForeignKey('Skill', on_delete=models.SET_NULL, null=True, blank=True)
-    cooldown_per_level = models.JSONField(default=dict)
 
     def clean(self):
         super().clean()
