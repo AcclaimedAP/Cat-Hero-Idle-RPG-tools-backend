@@ -19,16 +19,6 @@ class Companion(models.Model):
     types = models.ManyToManyField('Type')
     affected_skill = models.ForeignKey('Skill', on_delete=models.SET_NULL, null=True, blank=True)
 
-    def clean(self):
-        super().clean()
-        if not isinstance(self.cooldown_per_level, dict):
-            raise ValidationError({'cooldown_per_level': 'Must be a dictionary.'})
-        for level, cooldown in self.cooldown_per_level.items():
-            if not isinstance(level, int) or not isinstance(cooldown, int):
-                raise ValidationError({'cooldown_per_level': 'Keys and values must be integers.'})
-            if level < 1:
-                raise ValidationError({'cooldown_per_level': 'Levels must be positive integers.'})
-
 
 class Skill(models.Model):
     RARITY_CHOICES = [
