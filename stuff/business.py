@@ -70,7 +70,7 @@ def calculate_mp(companions_list, sub_rune_list, baseMp):
             elif sub_rune.type.name == "reduce_mp_for_companion_type_and_rarity":
                 mp_reduction, companion_type, rarity = sub_rune.values
                 for companion, data in detailed_companion_list.items():
-                    if companion_type in data["types"]:
+                    if companion_type in data["types"] or companion_type == "all":
                         if rarity == "all" or rarity == data["rarity"]:
                             detailed_companion_list[companion]["mp_cost"] -= int(mp_reduction)
     total_mp_cost = sum(data["mp_cost"] for data in detailed_companion_list.values())
