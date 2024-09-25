@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.core.exceptions import ValidationError
 
 
 class Companion(models.Model):
@@ -18,6 +17,7 @@ class Companion(models.Model):
     base_mp = models.IntegerField()
     types = models.ManyToManyField('Type')
     affected_skill = models.ForeignKey('Skill', on_delete=models.SET_NULL, null=True, blank=True)
+    mp_reduc = models.BooleanField(null=True, blank=True)
 
 
 class Skill(models.Model):

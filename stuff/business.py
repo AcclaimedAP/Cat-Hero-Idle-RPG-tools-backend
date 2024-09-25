@@ -39,7 +39,7 @@ def calculate_mp(companions_list, sub_rune_list, baseMp):
     for companion in companions:
         base_mp_adjustment = 0
         companion_level = next((item['level'] for item in companions_list if 'slug' in item and item['slug'] == companion.slug), None)
-        if companion.slug in ['lulu', 'jack-striker', 'raikan', 'mechaneko', 'frozen-berry', 'earl-of-sandwich'] and companion_level is not None:
+        if companion.mp_reduc and companion_level is not None:
             if companion_level >= 111:
                 base_mp_adjustment = 3
             elif companion_level >= 71:

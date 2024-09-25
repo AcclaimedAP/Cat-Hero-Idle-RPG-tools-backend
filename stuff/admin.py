@@ -13,6 +13,7 @@ class CompanionAdmin(admin.ModelAdmin):
         "base_mp",
         "display_types",
         "affected_skill_name",
+        "mp_reduc"
     )
     filter_horizontal = ("types",)
     ordering = ("id",)
