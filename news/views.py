@@ -29,7 +29,7 @@ class NewsIndexView(View):
             news_queryset = News.objects.all()
 
         # Paginate the queryset
-        paginator = Paginator(news_queryset, per_page)
+        paginator = Paginator(news_queryset.order_by('-created_at'), per_page)
         try:
             news_page = paginator.page(page)
         except PageNotAnInteger:
