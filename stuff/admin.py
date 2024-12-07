@@ -1,5 +1,5 @@
 from django.contrib import admin
-from stuff.models import Companion, MainRune, SubRune, Skill
+from stuff.models import Companion, MainRune, SubRune, Skill, Type
 from django.utils.safestring import mark_safe
 # from django import forms
 
@@ -124,3 +124,11 @@ class SubRuneAdmin(admin.ModelAdmin):
 
 
 admin.site.register(SubRune, SubRuneAdmin)
+
+class TypeAdmin(admin.ModelAdmin):
+    search_fields = ["slug"]
+    list_display = (
+        "slug",
+    )
+
+admin.site.register(Type, TypeAdmin)
