@@ -10,6 +10,7 @@ class Companion(models.Model):
         ('epic', 'Epic'),
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
+        ('supreme', 'Supreme'),
     ]
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=255, blank=True)
@@ -28,6 +29,7 @@ class Skill(models.Model):
         ('epic', 'Epic'),
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
+        ('supreme', 'Supreme'),
     ]
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=255, blank=True)
@@ -78,6 +80,7 @@ class SubRune(models.Model):
         ('epic', 'Epic'),
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
+        ('supreme', 'Supreme'),
     ]
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=255, blank=True)
@@ -94,6 +97,7 @@ class MainRune(models.Model):
         ('epic', 'Epic'),
         ('legendary', 'Legendary'),
         ('mythic', 'Mythic'),
+        ('supreme', 'Supreme'),
     ]
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=255, blank=True)

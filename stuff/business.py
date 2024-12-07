@@ -25,7 +25,7 @@ def return_all_data():
         'skills': skills_data,
         'mainRunes': list(mainRunes),
         'subRunes': list(subRunes),
-        'rarities': ["common", "uncommon", "rare", "epic", "legendary", "mythic"],
+        'rarities': ["common", "uncommon", "rare", "epic", "legendary", "mythic", "supreme"],
     }
 
     return response_data
