@@ -34,7 +34,7 @@ class Skill(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
-    description = models.TextField(max_length=500)
+    description = models.TextField(max_length=2048)
     types = models.ManyToManyField('Type')
     cooldown = models.FloatField()
 
@@ -85,7 +85,7 @@ class SubRune(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
-    description = models.TextField(max_length=200)
+    description = models.TextField(max_length=2048)
     type = models.ForeignKey(RuneType, on_delete=models.SET_NULL, related_name='runes', null=True, blank=True)
     values = ArrayField(models.CharField(max_length=100), default=list, blank=True)
 
@@ -102,4 +102,4 @@ class MainRune(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=255, blank=True)
     rarity = models.CharField(max_length=10, choices=RARITY_CHOICES)
-    description = models.TextField(max_length=200)
+    description = models.TextField(max_length=2048)
