@@ -1,6 +1,8 @@
 from django.contrib import admin
-from stuff.models import Companion, MainRune, SubRune, Skill, Type
+from stuff.models import Companion, MainRune, RuneType, SubRune, Skill, Type
 from django.utils.safestring import mark_safe
+from django.urls import reverse
+from django.utils.html import format_html
 # from django import forms
 
 
@@ -17,6 +19,7 @@ class CompanionAdmin(admin.ModelAdmin):
     )
     filter_horizontal = ("types",)
     ordering = ("id",)
+    change_list_template = "admin/stuff/companion/change_list.html"
 
     def affected_skill_name(self, obj):
         return obj.affected_skill.name if obj.affected_skill else '-'
@@ -25,6 +28,11 @@ class CompanionAdmin(admin.ModelAdmin):
     def display_types(self, obj):
         return ", ".join([type.slug for type in obj.types.all()])
     display_types.short_description = 'Types'
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['export_url'] = reverse('export_companions_csv')
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 admin.site.register(Companion, CompanionAdmin)
@@ -42,10 +50,16 @@ class SkillAdmin(admin.ModelAdmin):
     )
     filter_horizontal = ("types",)
     ordering = ("id",)
+    change_list_template = "admin/stuff/skill/change_list.html"
 
     def display_types(self, obj):
         return ", ".join([type.slug for type in obj.types.all()])
     display_types.short_description = 'Types'
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['export_url'] = reverse('export_skills_csv')
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 admin.site.register(Skill, SkillAdmin)
@@ -98,11 +112,17 @@ class MainRuneAdmin(admin.ModelAdmin):
     )
 
     ordering = ("id",)
+    change_list_template = "admin/stuff/mainrune/change_list.html"
 
     def display_types(self, obj):
         """Retourne une représentation des types liés à ce compagnon."""
         return ", ".join([type_.name for type_ in obj.types.all()[:5]]) + ('...' if obj.types.count() > 5 else '')
     display_types.short_description = 'Types'
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['export_url'] = reverse('export_mainrunes_csv')
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 admin.site.register(MainRune, MainRuneAdmin)
@@ -121,14 +141,48 @@ class SubRuneAdmin(admin.ModelAdmin):
     )
 
     ordering = ("id",)
+    change_list_template = "admin/stuff/subrune/change_list.html"
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['export_url'] = reverse('export_subrunes_csv')
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 admin.site.register(SubRune, SubRuneAdmin)
 
+
 class TypeAdmin(admin.ModelAdmin):
     search_fields = ["slug"]
-    list_display = (
-        "slug",
-    )
+    list_display = ("slug",)
+    ordering = ("id",)
+    change_list_template = "admin/stuff/type/change_list.html"
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['export_url'] = reverse('export_types_csv')
+        return super().changelist_view(request, extra_context=extra_context)
+
 
 admin.site.register(Type, TypeAdmin)
+
+
+class RuneTypeAdmin(admin.ModelAdmin):
+    search_fields = ["name"]
+    list_display = ("name", "display_values_required")
+    ordering = ("id",)
+    change_list_template = "admin/stuff/runetype/change_list.html"
+
+    def display_values_required(self, obj):
+        return ", ".join(obj.values_required) if obj.values_required else '-'
+    display_values_required.short_description = 'Values Required'
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['export_url'] = reverse('export_runetypes_csv')
+        return super().changelist_view(request, extra_context=extra_context)
+
+
+admin.site.register(RuneType, RuneTypeAdmin)
+
+admin.site.index_template = 'admin/stuff/index.html'
